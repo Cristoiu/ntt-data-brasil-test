@@ -1,0 +1,13 @@
+# cypress
+
+cypress/videos
+cypress/screenshots
+cypress/downloads
+cypress/reports
+
+#others
+
+package-lock.json
+node_modules
+allure-results
+allure-report
