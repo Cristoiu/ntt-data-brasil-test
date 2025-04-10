@@ -7,7 +7,8 @@ on:
 env: 
   BACKEND_TESTS: "cypress/e2e/backend/tests/*.cy.ts"
   FRONTEND_TESTS: "cypress/e2e/frontend/tests/*.cy.ts"
-  
+  PROJECT_DIR: /__w/ntt-data-brasil-test/ntt-data-brasil-test
+
 concurrency:
   group: cypress-tests-${{ github.ref }}
   cancel-in-progress: false
@@ -23,11 +24,11 @@ jobs:
 
       - name: install node dependencies
         run: npm install
-        working-directory: /__w/ntt-data-brasil-test/ntt-data-brasil-test
+        working-directory: ${{ env.PROJECT_DIR }}
 
       - name: details dependencies
         run: npm fund
-        working-directory: /__w/ntt-data-brasil-test/ntt-data-brasil-test
+        working-directory: ${{ env.PROJECT_DIR }}
 
   backend_tests:
     needs: build
@@ -40,23 +41,23 @@ jobs:
 
       - name: install node dependencies
         run: npm install
-        working-directory: /__w/ntt-data-brasil-test/ntt-data-brasil-test
+        working-directory: ${{ env.PROJECT_DIR }}
 
-      - name: tests
-        uses: nick-fields/retry@v3
-        with:
-          timeout_minutes: 7
-          max_attempts: 3
-          retry_on: error
-          command: npx cypress run --spec "${{ env.BACKEND_TESTS }}" --headless
-        working-directory: /__w/ntt-data-brasil-test/ntt-data-brasil-test
+      - name: run backend tests
+        run: |
+          for i in 1 2 3; do
+            npx cypress run --spec "${{ env.BACKEND_TESTS }}" --headless && break
+            echo "Retry #$i failed, retrying in 5s..."
+            sleep 5
+          done
+        working-directory: ${{ env.PROJECT_DIR }}
 
       - name: Upload Cypress screenshots on failure
         uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: login-videos
-          path: /__w/ntt-data-brasil-test/ntt-data-brasil-test/cypress/videos
+          path: ${{ env.PROJECT_DIR }}/cypress/videos
 
   frontend_tests:
     needs: backend_tests
@@ -69,20 +70,20 @@ jobs:
 
       - name: install node dependencies
         run: npm install
-        working-directory: /__w/ntt-data-brasil-test/ntt-data-brasil-test
+        working-directory: ${{ env.PROJECT_DIR }}
 
-      - name: tests
-        uses: nick-fields/retry@v3
-        with:
-          timeout_minutes: 7
-          max_attempts: 3
-          retry_on: error
-          command: npx cypress run --spec "${{ env.FRONTEND_TESTS }}" --headless
-        working-directory: /__w/ntt-data-brasil-test/ntt-data-brasil-test
+      - name: run frontend tests
+        run: |
+          for i in 1 2 3; do
+            npx cypress run --spec "${{ env.FRONTEND_TESTS }}" --headless && break
+            echo "Retry #$i failed, retrying in 5s..."
+            sleep 5
+          done
+        working-directory: ${{ env.PROJECT_DIR }}
 
       - name: Upload Cypress screenshots on failure
         uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: participantes-videos
-          path: /__w/ntt-data-brasil-test/ntt-data-brasil-test/cypress/videos
+          path: ${{ env.PROJECT_DIR }}/cypress/videos
