@@ -1,0 +1,74 @@
+name: Cypress Tests on push to main
+
+on:
+  push:
+    branches: ["main"]
+
+env: 
+  BACKEND_TESTS: "cypress/e2e/backend/tests/*.cy.ts"
+  FRONTEND_TESTS: "cypress/e2e/frontend/tests/*.cy.ts"
+  
+concurrency:
+  group: cypress-tests-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    container:
+      image: cypress/included:13.14.0
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: install node dependencies
+        run: npm install
+      - name: details dependencies
+        run: npm fund
+
+  backend_tests:
+    needs: build
+    runs-on: ubuntu-24.04
+    container:
+      image: cypress/included:13.14.0
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: install node dependencies
+        run: npm install
+      - name: tests
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 7
+          max_attempts: 3
+          retry_on: error
+          command:  npx cypress run --spec ${BACKEND_TESTS:} --headless
+      - name: Upload Cypress screenshots on failure
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: login-videos
+          path: cypress/videos
+
+  frontend_tests:
+    needs: login
+    runs-on: ubuntu-24.04
+    container:
+      image: cypress/included:13.14.0
+    steps:
+      - name: checkout
+        uses: actions/checkout@v4
+      - name: install node dependencies
+        run: npm install
+      - name: tests
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 7
+          max_attempts: 3
+          retry_on: error
+          command:  npx cypress run --spec ${FRONTEND_TESTS:} --headless
+      - name: Upload Cypress screenshots on failure
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: participantes-videos
+          path: cypress/videos

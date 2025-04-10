@@ -1,25 +1,23 @@
-#language: pt
+Feature: Autenticação de Usuário
 
-Funcionalidade: Autenticação de Usuário
+  Background:
+    Given que estou na página de login
 
-  Contexto:
-    Dado que estou na página de login
+  Scenario: Login validação de todos os campos CT001
+    When eu não preencho o campo de email 
+    And não preencho o campo de senha
+    And clico no botão "Entrar"
+    Then não devo ser autenticado com sucesso
+    And o sistema deve validar os campos
 
-  Cenário: Login validação de todos os campos CT001
-    Quando eu não preencho o campo de email 
-    E  não preencho o campo de senha
-    E clico no botão "Entrar"
-    Então não devo ser autenticado com sucesso
-    E o sistema deve validar os campos
+  Scenario: Login com senha incorreta CT002
+    When eu preencho o campo de email com "usuariocadastrado@exemplo.com"
+    And preencho o campo de senha com "senha_incorreta"
+    And clico no botão "Entrar"
+    Then devo ver uma mensagem de erro informando "Usuário e/ou senha inválidos"
 
-  Cenário: Login com senha incorreta CT002
-    Quando eu preencho o campo de email com "usuariocadastrado@exemplo.com"
-    E preencho o campo de senha com "senha_incorreta"
-    E clico no botão "Entrar"
-    Então devo ver uma mensagem de erro informando "Usuário e/ou senha inválidos"
-
-  Cenário: Login com email não cadastrado CT003
-    Quando eu preencho o campo de email com "naoexiste@exemplo.com"
-    E preencho o campo de senha com "senha123"
-    E clico no botão "Entrar"
-    Então devo ver uma mensagem de erro informando "Usuário e/ou senha inválidos"
+  Scenario: Login com email não cadastrado CT003
+    When eu preencho o campo de email com "naoexiste@exemplo.com"
+    And preencho o campo de senha com "senha123"
+    And clico no botão "Entrar"
+    Then devo ver uma mensagem de erro informando "Usuário e/ou senha inválidos"
