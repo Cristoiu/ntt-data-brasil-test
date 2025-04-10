@@ -20,10 +20,14 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4
+
       - name: install node dependencies
         run: npm install
+        working-directory: /__w/ntt-data-brasil-test/ntt-data-brasil-test
+
       - name: details dependencies
         run: npm fund
+        working-directory: /__w/ntt-data-brasil-test/ntt-data-brasil-test
 
   backend_tests:
     needs: build
@@ -33,21 +37,26 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4
+
       - name: install node dependencies
         run: npm install
+        working-directory: /__w/ntt-data-brasil-test/ntt-data-brasil-test
+
       - name: tests
         uses: nick-fields/retry@v3
         with:
           timeout_minutes: 7
           max_attempts: 3
           retry_on: error
-          command:  npx cypress run --spec ${BACKEND_TESTS:} --headless
+          command: npx cypress run --spec "${{ env.BACKEND_TESTS }}" --headless
+        working-directory: /__w/ntt-data-brasil-test/ntt-data-brasil-test
+
       - name: Upload Cypress screenshots on failure
         uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: login-videos
-          path: cypress/videos
+          path: /__w/ntt-data-brasil-test/ntt-data-brasil-test/cypress/videos
 
   frontend_tests:
     needs: backend_tests
@@ -57,18 +66,23 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4
+
       - name: install node dependencies
         run: npm install
+        working-directory: /__w/ntt-data-brasil-test/ntt-data-brasil-test
+
       - name: tests
         uses: nick-fields/retry@v3
         with:
           timeout_minutes: 7
           max_attempts: 3
           retry_on: error
-          command:  npx cypress run --spec ${FRONTEND_TESTS:} --headless
+          command: npx cypress run --spec "${{ env.FRONTEND_TESTS }}" --headless
+        working-directory: /__w/ntt-data-brasil-test/ntt-data-brasil-test
+
       - name: Upload Cypress screenshots on failure
         uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: participantes-videos
-          path: cypress/videos
+          path: /__w/ntt-data-brasil-test/ntt-data-brasil-test/cypress/videos
