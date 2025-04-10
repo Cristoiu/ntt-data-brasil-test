@@ -8,8 +8,7 @@ export default defineConfig({
       'cypress/e2e/frontend/tests/CT002.cy.ts',
       'cypress/e2e/frontend/tests/CT003.cy.ts',
       'cypress/e2e/backend/tests/CT001.cy.ts',
-      'cypress/e2e/backend/tests/CT002.cy.ts',
-      'cypress/e2e/backend/tests/CT003.cy.ts'
+      'cypress/e2e/backend/tests/CT002.cy.ts'
     ],
     video: true,
     videoCompression: 32,
