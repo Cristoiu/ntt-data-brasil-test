@@ -50,7 +50,7 @@ jobs:
           path: cypress/videos
 
   frontend_tests:
-    needs: login
+    needs: backend_tests
     runs-on: ubuntu-24.04
     container:
       image: cypress/included:13.14.0
